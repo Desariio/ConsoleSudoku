@@ -4,9 +4,11 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <map>
 #include "Cells.h"
 
 class Board : public Cells {
+
 public:
     Board();
     Board(const char *b);
@@ -20,12 +22,21 @@ public:
     bool checkSquare(int i, int j);
 
     void step();
+    void inclusive();
+    void hiddenSingle();
+
     Cells setBoard(const char *b);
     std::vector<int> listOfPossibilities(std::vector<int> &possible, int i, int j);
+
+    bool columnSingle(int i, int j, int *value);
+    bool rowSingle(int i, int j, int *value);
+    bool blockSingle(int i, int j, int *value);
+    bool setSingle(std::vector<int> const& allColumnPossibilities, std::vector<int> const& cellPossibilities, int *value);
 
     friend std::ostream & operator<<(std::ostream & flux, Board const &board);
     friend bool operator==(Board const& tmp, Board const& board);
     friend bool operator!=(Board const& tmp, Board const& board);
+
 private:
     Cells board[9][9];
 

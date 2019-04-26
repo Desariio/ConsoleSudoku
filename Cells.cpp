@@ -8,10 +8,6 @@ Cells::Cells()
 Cells::Cells(int number) :number(number)
 {
 }
-/*
-Cells::Cells(int num, std::vector<Cells> possi) : num(num), possibilities(possi)
-{
-}*/
 
 Cells::~Cells()
 {

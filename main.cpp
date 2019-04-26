@@ -21,13 +21,12 @@ int main(int ac, char **argv){
         std::cout << b << '\n' << std::endl;
         tmp = b;
         b.step();
-        std::cout << "TMP \n" << tmp << '\n' << std::endl;
         ++steps;
     }while(b != tmp);
-    std::cout << "steps " << steps << " steps!" << std::endl;
-   /* if(b.isSolved())
+
+    if(b.isSolved())
         std::cout << "Board solved in " << steps << " steps!" << std::endl;
     else
-        std::cout << "This board cannot be solved...";*/
+        std::cout << "This board cannot be solved...";
     return 0;
 }
