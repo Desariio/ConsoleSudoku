@@ -90,15 +90,15 @@ bool Board::checkSquare(int i, int j)
 void Board::step()
 {
     //Board tmp = *this;
-    bool step = false;
-    while(!step){
+    bool insert = false;
+    while(!insert){
         if(inclusive() || hiddenSingle())
-            step = true;
+            insert = true;
         else
             break;
         nakedPair();
         if(isSolved())
-            step = true;
+            insert = true;
     }
 }
 
@@ -112,7 +112,7 @@ bool Board::inclusive()
                 int value = this->board[i][j].getPossibilities().front();
                 this->board[i][j] = value;
                 removePossibilities(i, j, &value);
-                std::cout << "i : " << i << "; j : " << j << std::endl;
+                std::cout << "Inclusive \ni : " << i << "; j : " << j << std::endl;
                 return true;
             }
         }
@@ -134,6 +134,7 @@ bool Board::hiddenSingle()
                 if (rowSingle(i, j, &value) || columnSingle(i, j, &value) || blockSingle(i, j, &value)) {
                     this->board[i][j] = value;
                     removePossibilities(i, j, &value);
+                    std::cout << "Hidden Single \ni : " << i << "; j : " << j << std::endl;
                     return true;
                 }
 
