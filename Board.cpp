@@ -56,40 +56,20 @@ bool Board::isSolved()
     return true;
 }
 
-bool Board::checkRow(int i, int j)
-{
-    for (int k = j + 1; k < 9; ++k) {
-        if (this->board[i][j].getNumber() == this->board[i][k].getNumber())
-            return false;
-    }
-    return true;
-}
-
-bool Board::checkColumn(int i, int j)
-{
-    for (int k = j + 1; k < 9; ++k) {
-        if (this->board[i][j].getNumber() == this->board[k][j].getNumber())
-            return false;
-    }
-    return true;
-}
-
-bool Board::checkSquare(int i, int j)
-{
-    for (int k = 0; k < 9; ++k) {
-        if (this->board[i][j].getNumber() != 0
-                && this->board[j % 3 + (i % 3) * 3][j / 3 + (i / 3) * 3].getNumber()
-                == this->board[k % 3 + (i % 3) * 3][k / 3 + (i / 3) * 3].getNumber()) {
-
-            return false;
-        }
-    }
-    return true;
-}
-
 void Board::step()
 {
-    //Board tmp = *this;
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            std::vector<int> tmp = this->board[i][j].getPossibilities();
+            std::cout << "[ ";
+            for(uint8_t z = 0; z < tmp.size(); ++z)
+                std::cout << tmp[z] ;
+            std::cout << " ]";
+
+        }
+        std::cout << '\n';
+    }
+
     bool insert = false;
     while(!insert){
         if(inclusive() || hiddenSingle())
@@ -97,9 +77,12 @@ void Board::step()
         else
             break;
         nakedPair();
+        nakedTriple();
+
         if(isSolved())
             insert = true;
     }
+
 }
 
 bool Board::inclusive()
@@ -143,6 +126,21 @@ bool Board::hiddenSingle()
     }
     return false;
 }
+
+/*
+void Board::hiddenTriple()
+{
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            if(this->board[i][j].getNumber() == 0 ){
+                int value;
+                if(rowTriple(i, j) || columnTriple(i, j) || blockTriple(i, j)){
+
+                }
+            }
+        }
+    }
+}*/
 
 std::vector<int> Board::listOfPossibilities(std::vector<int> &possible, int i, int j)
 {
@@ -197,6 +195,7 @@ bool Board::rowSingle(int i, int j, int *value)
 
     return setHiddenSingle(allPossible, this->board[i][j].getPossibilities(), value);
 }
+
 
 bool Board::columnSingle(int i, int j, int *value)
 {
@@ -359,9 +358,9 @@ bool Board::setHiddenSingle(std::vector<int> const& allPossibilities, std::vecto
         *value = it->second;
         return true;
     }
-
     return false;
 }
+
 
 void Board::rowNakedPair( int i, int j)
 {
@@ -420,7 +419,6 @@ void Board::squareNakedPair(int i, int j)
                     }
                 }
             }
-
         }
     }
     //inclusive();
@@ -437,7 +435,173 @@ void Board::nakedPair()
             }
         }
     }
+}
 
+void Board::removeRowNakedTriple(std::vector<int> &possibilities, int i, int j, int k)
+{
+    for(uint8_t z = 0; z < possibilities.size(); ++z){
+        if(this->board[i][j].getPossibilities()[0] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[i][k].setPossiblities(possibilities);
+        }
+        if(this->board[i][j].getPossibilities()[1] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[i][k].setPossiblities(possibilities);
+        }
+        if(this->board[i][j].getPossibilities()[2] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[i][k].setPossiblities(possibilities);
+        }
+    }
+}
+
+void Board::removeColumnNakedTriple(std::vector<int> &possibilities, int i, int j, int k)
+{
+    for(uint8_t z = 0; z < possibilities.size(); ++z){
+        if(this->board[i][j].getPossibilities()[0] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[k][j].setPossiblities(possibilities);
+        }
+        if(this->board[i][j].getPossibilities()[1] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[k][j].setPossiblities(possibilities);
+        }
+        if(this->board[i][j].getPossibilities()[2] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[k][j].setPossiblities(possibilities);
+        }
+    }
+}
+
+void Board::removeSquareNakedTriple(std::vector<int> &possibilities, int i, int j, int k, int p)
+{
+    for(uint8_t z = 0; z < possibilities.size(); ++z){
+        if(this->board[i][j].getPossibilities()[0] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[k][p].setPossiblities(possibilities);
+        }
+        if(this->board[i][j].getPossibilities()[1] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[k][p].setPossiblities(possibilities);
+        }
+        if(this->board[i][j].getPossibilities()[2] == possibilities[z]){
+            possibilities.erase(possibilities.begin() + z);
+            this->board[k][p].setPossiblities(possibilities);
+        }
+    }
+}
+
+void Board::rowNakedTriple(int i, int j)
+{
+    for(int u = 0; u < 9; ++u){
+        if(u != j){
+            for(int v = 0; v < 9; ++v){
+/*
+                std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                std::vector<int> secondCell = this->board[i][u].getPossibilities();
+                std::vector<int> thirdCell = this->board[i][v].getPossibilities();
+                if(this->board[i][j].getPossibilities().size() <= 3){
+                    for(uint8_t z = 0; z < firstCell.size(); ++z){
+                        for(uint8_t y = 0; y < secondCell.size(); ++y){
+                            for(uint8_t x = 0; x < thirdCell.size(); ++x){
+                                if( ( (firstCell[z] == secondCell[y]) && (firstCell[z] == secondCell[y]) )
+                                       && ( (firstCell[z] == thirdCell[x]) && firstCell[z] == thirdCell[x] ) ){
+                                    std::cout << "okay" << std::endl;
+                                }
+                            }
+                        }
+                    }
+                }*/
+
+                int l, y;
+                squareIndex(i, j, &l, &y);
+                if( ( this->board[i][j].getPossibilities() == this->board[i][u].getPossibilities() )
+                        && (this->board[i][j].getPossibilities() == this->board[i][v].getPossibilities() )
+                        && (this->board[i][j].getPossibilities().size() == 3) ){
+                    if(j != u && u != v && v != j){
+                        for(int k = 0; k < 9; ++k){
+                            if( k != u && k!= j && k != v){
+                                std::vector<int> tmp = this->board[i][k].getPossibilities();
+                                removeRowNakedTriple(tmp, i, j, k);
+                                if(u < y && v < y)
+                                    removeSquareNakedTriple(tmp, i, j, l, y);
+                            }
+
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Board::columnNakedTriple(int i, int j)
+{
+    for(int u = 0; u < 9; ++u){
+        if(u != i){
+            for(int v = 0; v < 9; ++v){
+                if( (this->board[i][j].getPossibilities() == this->board[u][j].getPossibilities() )
+                        && ( this->board[i][j].getPossibilities() == this->board[v][j].getPossibilities() )
+                        && this->board[i][j].getPossibilities().size() == 3){
+                    if(i != u && u != v && v != i){
+                        for(int k = 0; k < 9; ++k){
+                            if(k != u && k != i && k != v){
+                                std::vector<int> tmp = this->board[k][j].getPossibilities();
+                                removeColumnNakedTriple(tmp, i, j, k);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Board::squareNakedTriple(int i, int j)
+{
+    int l, y;
+    squareIndex(i, j, &l, &y);
+
+    for(int k = l; k < (l + 3); ++k){
+        for(int p = y; p < (y + 3); ++p){
+            if(i != k && p != j){
+                for(int m = l; m < (l + 3); ++m){
+                    for(int n = p; n < (p + 3); ++n){
+                        if( ( this->board[i][j].getPossibilities() == this->board[k][p].getPossibilities() )
+                                && ( this->board[i][j].getPossibilities() == this->board[m][n].getPossibilities() )
+                                && this->board[i][j].getPossibilities().size() == 3){
+
+                            for(int v = l; v < (l + 3); ++v){
+                                for(int w = p; w < (p + 3); ++w){
+                                    if( ( ( (v != i && w != j) || (v == i && w != j) || (v != i && w == j) )
+                                         && ( (v != k && w != p) || (v == k && w != p) || (v != k && w == p) ) )
+                                         && ( (m != i && n != j) || (m == i && n != j) || (m != i && n == j) )
+                                             && ( (m != k && m != p) || (m == k && n != p) || (m != k && n == p)  )   ){
+                                        std::vector<int> tmp = this->board[m][n].getPossibilities();
+                                        removeSquareNakedTriple(tmp, i, j, m, n);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+    }
+}
+
+void Board::nakedTriple()
+{
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            if(this->board[i][j].getNumber() == 0){
+                rowNakedTriple(i, j);
+                columnNakedTriple(i, j);
+                squareNakedTriple(i, j);
+            }
+        }
+    }
 }
 
 void Board::squareIndex(int i, int j, int *x, int *y)
