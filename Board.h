@@ -29,6 +29,7 @@ private:
 
     bool inclusive();
     bool hiddenSingle();
+    void hiddenPair();
     void nakedPair();
     void nakedTriple();
     void hiddenTriple();
