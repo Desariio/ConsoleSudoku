@@ -34,6 +34,8 @@ private:
     void nakedTriple();
     void hiddenTriple();
 
+    bool pointingPair();
+
     Cells setBoard(const char *b);
     std::vector<int> listOfPossibilities(std::vector<int> &possibilities, int i, int j);
 
@@ -41,7 +43,11 @@ private:
     bool columnSingle(int i, int j, int *value);
     bool blockSingle(int i, int j, int *value);
 
-    bool rowHiddenPair(int i, int j, int *value);
+    void rowHiddenPair(int i, int j, int *value);
+
+
+    bool rowPointingPair(int i, int j, int *value);
+    bool columnPointingPair(int i, int j, int *value);
 
     void removePossibilities(int i, int j, int *value);
     void removeValue(std::vector<int> &possibilities, int i, int j, int *value);
