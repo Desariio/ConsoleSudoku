@@ -34,6 +34,8 @@ private:
     void nakedTriple();
     void hiddenTriple();
 
+    bool lockedTriple();
+
     bool pointingPair();
 
     Cells setBoard(const char *b);
@@ -67,6 +69,10 @@ private:
     void rowNakedTriple(int i, int j);
     void columnNakedTriple(int i, int j);
     void squareNakedTriple(int i, int j);
+
+    bool rowLockedTriple(int i, int j);
+    bool columnLockedTriple(int i, int j);
+    bool squareLockedTriple(int i, int j);
 
     void squareIndex(int i, int j, int *x, int *y);
 

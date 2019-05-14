@@ -70,89 +70,30 @@ void Board::step()
     }
 
     bool insert = false;
+
     while(!insert){
+
+
+
 
         nakedPair();
         nakedTriple();
+        if(lockedTriple())
+            break;
         //hiddenPair();
         if(pointingPair() )
             break;
 
         if(inclusive() || hiddenSingle())
-            break;
+           break;
+
+
 
         if(isSolved())
             insert = true;
         else
             break;
     }
-    //std::cout << "BOARD 0 1 : " << this->board[0][1].getPossibilities() << std::endl;
-/*
-    for(int i = 0; i < 9; ++i){
-        for(int j = 0; j < 9; ++j){
-            if(i == 7 && j == 6){
-                int l, c;
-                squareIndex(i, j, &l, &c);
-                for(int k = l; k < (l + 3); ++k){
-                    for(int p = c; p < (c + 3); ++p){
-                        std::vector<int> tmp = this->board[k][p].getPossibilities();
-                        if(k != i ){
-                            for(uint8_t z = 0; z < this->board[i][j].getPossibilities().size(); ++z){
-                                for(uint8_t x = 0; x < tmp.size(); ++x){
-                                    if(tmp[x] == this->board[i][j].getPossibilities()[z]){
-                                        int val = this->board[k][p].getPossibilities()[z];
-                                        std::cout << "VAL :" << val << ", k : " << k << std::endl;
-                                        tmp.erase(tmp.begin() + x);
-                                        this->board[k][p].setPossiblities(tmp);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if(i == 0 && j == 8 || i == 2 && j == 7 || i == 2 && j == 8){
-                std::vector<int> tmp = this->board[i][j].getPossibilities();
-                for(uint8_t z = 0; z < tmp.size(); ++z){
-                    if(tmp[z] == 8){
-                        tmp.erase(tmp.begin() + z);
-                        this->board[i][j].setPossiblities(tmp);
-                    }
-                    if(tmp[z] == 3){
-                        tmp.erase(tmp.begin() + z);
-                        this->board[i][j].setPossiblities(tmp);
-                    }
-                }
-            }
-            if(i == 6 && j == 7){
-                std::vector<int> tmp = this->board[i][j].getPossibilities();
-                for(uint8_t z = 0; z < tmp.size(); ++z){
-                    if(tmp[z] == 1){
-                        tmp.erase(tmp.begin() + z);
-                        this->board[i][j].setPossiblities(tmp);
-                    }
-                }
-            }
-            if(i == 8 && j == 6){
-                std::vector<int> tmp = this->board[i][j].getPossibilities();
-                for(uint8_t z = 0; z < tmp.size(); ++z){
-                    if(tmp[z] == 7){
-                        tmp.erase(tmp.begin() + z);
-                        this->board[i][j].setPossiblities(tmp);
-                    }
-                }
-            }
-            if(i == 8 && j == 0){
-                std::vector<int> tmp = this->board[i][j].getPossibilities();
-                for(uint8_t z = 0; z < tmp.size(); ++z){
-                    if(tmp[z] == 8){
-                        tmp.erase(tmp.begin() + z);
-                        this->board[i][j].setPossiblities(tmp);
-                    }
-                }
-            }
-        }
-    }*/
 
      std::cout << '\n';
    /*  for(int i = 0; i < 9; ++i){
@@ -548,15 +489,16 @@ void Board::squareNakedPair(int i, int j)
 
     for(int k = l; k < (l + 3); ++k){
         for(int p = y; p < (y + 3); ++p){
-            if(i != k && p != j){
+            if( (i != k && p != j) || (i == k && p != j) || (i != k && p == j)){
                 if(this->board[i][j].getPossibilities() == this->board[k][p].getPossibilities() && this->board[i][j].getPossibilities().size() == 2){
-                    //std::cout << "i : "<< i << ", j :" << j << std::endl;
+                //    std::cout << "TAAAADDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
+                    std::cout << "i : "<< i << ", j :" << j << "k : "<< k << ", p :" << p << std::endl;
+
                     for(int v = l; v < (l+3); ++v){
                         for(int w = y; w < (y+3); ++w){
-                             //std::cout << this->board[v][w].getPossibilities() << " v : "<< v << ", w :" << w << std::endl;
+                            // std::cout << this->board[v][w].getPossibilities() << " v : "<< v << ", w :" << w << std::endl;
                             if( ( (v != i && w != j) || (v == i && w != j) || (v != i && w == j) )
                                 && ( (v != k && w != p) || (v == k && w != p) || (v != k && w == p) )){
-
                                 std::vector<int> squareVector = this->board[v][w].getPossibilities();
                                 removeSquarePairPossibilities(squareVector, i, j, v, w);
                             }
@@ -658,75 +600,70 @@ void Board::rowNakedTriple(int i, int j)
 
                         }
                     }
-                }
-                //check if 2 cells have 3 same possibilities and the third have 2 of them
-                if(this->board[i][j].getPossibilities().size() == 3
-                        && (this->board[i][u].getPossibilities().size() == 3 || this->board[i][v].getPossibilities().size() == 3) ){
-                    if( j != u && u != v && v != j){
-                        std::vector<int> firstCell = this->board[i][j].getPossibilities();
-                        std::vector<int> secondCell = this->board[i][u].getPossibilities();
-                        std::vector<int> thirdCell = this->board[i][v].getPossibilities();
-                        bool equal = false;
-                        if(firstCell == secondCell){
-                            if(thirdCell.size() == 2){
-                                for(uint8_t z = 0; z < thirdCell.size(); ++z){
-                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
-                                        if(firstCell[x] == thirdCell[z])
-                                            equal = true;
-                                        else
-                                            equal = false;
+
+                    //check if 2 cells have 3 same possibilities and the third have 2 of them
+                    if(this->board[i][j].getPossibilities().size() == 3
+                            && (this->board[i][u].getPossibilities().size() == 3 || this->board[i][v].getPossibilities().size() == 3) ){
+                        if( j != u && u != v && v != j){
+                            std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                            std::vector<int> secondCell = this->board[i][u].getPossibilities();
+                            std::vector<int> thirdCell = this->board[i][v].getPossibilities();
+                            bool equal = false;
+                            if(firstCell == secondCell){
+                                if(thirdCell.size() == 2){
+                                    for(uint8_t z = 0; z < thirdCell.size(); ++z){
+                                        for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                            if(firstCell[x] == thirdCell[z])
+                                                equal = true;
+                                            else
+                                                equal = false;
+                                        }
                                     }
-                                }
-                                if(equal){
-                                    for(int k = 0; k < 9; ++k){
-                                        if(k != j && k != u && k !=j && k != v){
-                                            std::vector<int> tmp = this->board[i][k].getPossibilities();
-                                            for(uint8_t n = 0; n < firstCell.size(); ++n){
-                                                for(uint8_t m = 0; m < tmp.size(); ++m){
-                                                    if( firstCell[n] == tmp[m]){
-                                                        tmp.erase(tmp.begin() + m);
-                                                        //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
-                                                        this->board[i][k].setPossiblities(tmp);
-                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                    if(equal){
+                                        for(int k = 0; k < 9; ++k){
+                                            if(k != j && k != u && k !=j && k != v){
+                                                std::vector<int> tmp = this->board[i][k].getPossibilities();
+                                                for(uint8_t n = 0; n < firstCell.size(); ++n){
+                                                    for(uint8_t m = 0; m < tmp.size(); ++m){
+                                                        if( firstCell[n] == tmp[m]){
+                                                            tmp.erase(tmp.begin() + m);
+                                                            //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
+                                                            this->board[i][k].setPossiblities(tmp);
+                                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                                        }
                                                     }
+
                                                 }
-
+                                                //removeRowNakedTriple(firstCell, i, j, k);
                                             }
-                                            //removeRowNakedTriple(firstCell, i, j, k);
-                                        }else if( (k >= j && k <= j +3)
-                                                  && (k >= u && k <= u + 3)
-                                                  && (k >= v && k <= v + 3)){
-
                                         }
                                     }
                                 }
-                            }
-                        }else if(firstCell == thirdCell){
-                            if(secondCell.size() == 2){
-                                for(uint8_t z = 0; z < secondCell.size(); ++z){
-                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
-                                        if(firstCell[x] == secondCell[z])
-                                            equal = true;
-                                        else
-                                            equal = false;
+                            }else if(firstCell == thirdCell){
+                                if(secondCell.size() == 2){
+                                    for(uint8_t z = 0; z < secondCell.size(); ++z){
+                                        for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                            if(firstCell[x] == secondCell[z])
+                                                equal = true;
+                                            else
+                                                equal = false;
+                                        }
                                     }
-                                }
-                                if(equal){
-                                    for(int k = 0; k < 9; ++k){
-                                        if(k != j && k != u && k !=j && k != v){
-                                            std::vector<int> tmp = this->board[i][k].getPossibilities();
-                                            for(uint8_t n = 0; n < firstCell.size(); ++n){
-                                                for(uint8_t m = 0; m < tmp.size(); ++m){
-                                                    if( firstCell[n] == tmp[m]){
-                                                        tmp.erase(tmp.begin() + m);
-                                                        //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
-                                                        this->board[i][k].setPossiblities(tmp);
-                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                    if(equal){
+                                        for(int k = 0; k < 9; ++k){
+                                            if(k != j && k != u && k !=j && k != v){
+                                                std::vector<int> tmp = this->board[i][k].getPossibilities();
+                                                for(uint8_t n = 0; n < firstCell.size(); ++n){
+                                                    for(uint8_t m = 0; m < tmp.size(); ++m){
+                                                        if( firstCell[n] == tmp[m]){
+                                                            tmp.erase(tmp.begin() + m);
+                                                            //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
+                                                            this->board[i][k].setPossiblities(tmp);
+                                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                                        }
                                                     }
                                                 }
-
                                             }
-                                            //removeRowNakedTriple(firstCell, i, j, k);
                                         }
                                     }
                                 }
@@ -734,6 +671,7 @@ void Board::rowNakedTriple(int i, int j)
                         }
                     }
                 }
+
             }
         }
     }
@@ -756,75 +694,68 @@ void Board::columnNakedTriple(int i, int j)
                             }
                         }
                     }
-                }
-                //check if 2 cells have 3 same possibilities and the third have 2 of them
-                if(this->board[i][j].getPossibilities().size() == 3
-                        && (this->board[u][j].getPossibilities().size() == 3 || this->board[v][j].getPossibilities().size() == 3) ){
-                    if( i != u && u != v && v != i){
-                        std::vector<int> firstCell = this->board[i][j].getPossibilities();
-                        std::vector<int> secondCell = this->board[u][i].getPossibilities();
-                        std::vector<int> thirdCell = this->board[v][i].getPossibilities();
-                        bool equal = false;
-                        if(firstCell == secondCell){
-                            if(thirdCell.size() == 2){
-                                for(uint8_t z = 0; z < thirdCell.size(); ++z){
-                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
-                                        if(firstCell[x] == thirdCell[z])
-                                            equal = true;
-                                        else
-                                            equal = false;
+
+                    //check if 2 cells have 3 same possibilities and the third have 2 of them
+                    if(this->board[i][j].getPossibilities().size() == 3
+                            && (this->board[u][j].getPossibilities().size() == 3 || this->board[v][j].getPossibilities().size() == 3) ){
+                        if( i != u && u != v && v != i){
+                            std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                            std::vector<int> secondCell = this->board[u][i].getPossibilities();
+                            std::vector<int> thirdCell = this->board[v][i].getPossibilities();
+                            bool equal = false;
+                            if(firstCell == secondCell){
+                                if(thirdCell.size() == 2){
+                                    for(uint8_t z = 0; z < thirdCell.size(); ++z){
+                                        for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                            if(firstCell[x] == thirdCell[z])
+                                                equal = true;
+                                            else
+                                                equal = false;
+                                        }
                                     }
-                                }
-                                if(equal){
-                                    for(int k = 0; k < 9; ++k){
-                                        if(k != i && k != u && k != v){
-                                            std::vector<int> tmp = this->board[k][j].getPossibilities();
-                                            for(uint8_t n = 0; n < firstCell.size(); ++n){
-                                                for(uint8_t m = 0; m < tmp.size(); ++m){
-                                                    if( firstCell[n] == tmp[m]){
-                                                        tmp.erase(tmp.begin() + m);
-                                                        //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
-                                                        this->board[k][j].setPossiblities(tmp);
-                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                    if(equal){
+                                        for(int k = 0; k < 9; ++k){
+                                            if(k != i && k != u && k != v){
+                                                std::vector<int> tmp = this->board[k][j].getPossibilities();
+                                                for(uint8_t n = 0; n < firstCell.size(); ++n){
+                                                    for(uint8_t m = 0; m < tmp.size(); ++m){
+                                                        if( firstCell[n] == tmp[m]){
+                                                            tmp.erase(tmp.begin() + m);
+                                                            //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
+                                                            this->board[k][j].setPossiblities(tmp);
+                                                //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                                        }
                                                     }
                                                 }
-
                                             }
-                                            //removeRowNakedTriple(firstCell, i, j, k);
-                                        }else if( (k >= j && k <= j +3)
-                                                  && (k >= u && k <= u + 3)
-                                                  && (k >= v && k <= v + 3)){
-
                                         }
                                     }
                                 }
-                            }
-                        }else if(firstCell == thirdCell){
-                            if(secondCell.size() == 2){
-                                for(uint8_t z = 0; z < secondCell.size(); ++z){
-                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
-                                        if(firstCell[x] == secondCell[z])
-                                            equal = true;
-                                        else
-                                            equal = false;
+                            }else if(firstCell == thirdCell){
+                                if(secondCell.size() == 2){
+                                    for(uint8_t z = 0; z < secondCell.size(); ++z){
+                                        for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                            if(firstCell[x] == secondCell[z])
+                                                equal = true;
+                                            else
+                                                equal = false;
+                                        }
                                     }
-                                }
-                                if(equal){
-                                    for(int k = 0; k < 9; ++k){
-                                        if(k != i && k != u && k != v){
-                                            std::vector<int> tmp = this->board[k][i].getPossibilities();
-                                            for(uint8_t n = 0; n < firstCell.size(); ++n){
-                                                for(uint8_t m = 0; m < tmp.size(); ++m){
-                                                    if( firstCell[n] == tmp[m]){
-                                                        tmp.erase(tmp.begin() + m);
-                                                        //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
-                                                        this->board[k][i].setPossiblities(tmp);
-                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                    if(equal){
+                                        for(int k = 0; k < 9; ++k){
+                                            if(k != i && k != u && k != v){
+                                                std::vector<int> tmp = this->board[k][i].getPossibilities();
+                                                for(uint8_t n = 0; n < firstCell.size(); ++n){
+                                                    for(uint8_t m = 0; m < tmp.size(); ++m){
+                                                        if( firstCell[n] == tmp[m]){
+                                                            tmp.erase(tmp.begin() + m);
+                                                            //std::cout << "CHECK REMOVE ROW : "<< tmp << "\n \n " << tmp[m] << std::endl;
+                                                            this->board[k][i].setPossiblities(tmp);
+                                                            //std::cout << "FIRST CELL : " << firstCell << " , i : " << i << ", j : " << j << ", u : "<< u << ", v :"<< v << ", k : " << k << std::endl;
+                                                        }
                                                     }
                                                 }
-
                                             }
-                                            //removeRowNakedTriple(firstCell, i, j, k);
                                         }
                                     }
                                 }
@@ -832,6 +763,7 @@ void Board::columnNakedTriple(int i, int j)
                         }
                     }
                 }
+
             }
         }
     }
@@ -868,103 +800,91 @@ void Board::squareNakedTriple(int i, int j)
                                         }
                                     }
                                 }
-                            }
-                            if( (this->board[i][j].getPossibilities().size() == 3 )
-                                    && (this->board[k][p].getPossibilities().size() == 3 || this->board[m][n].getPossibilities().size() == 3)){
-                                //std::cout << " k : " << k << ", p : " << p << std::endl;
-                                //std::cout << "I J : " << this->board[i][j].getPossibilities() << "\n K P : " << this->board[k][p].getPossibilities() << "\nM N : " << this->board[m][n].getPossibilities() << std::endl;
-                                if( ( i == k && j != p && j != n)
-                                        || ( i!= k && j == p  )){
 
-                                  // && m != k && n != j
-                                  // && k != m && p != n
-                                  // && k != i && p != j
-                                  //      && m != i && n != j
-                                    std::vector<int> firstCell = this->board[i][j].getPossibilities();
-                                    std::vector<int> secondCell = this->board[k][p].getPossibilities();
-                                    std::vector<int> thirdCell = this->board[m][n].getPossibilities();
-                                    bool equal = false;
-                                    //std::cout << "i : " << i << ", j : " << j << std::endl;
-                                    //std::cout << "k : " << k << ", p : " << p << std::endl;
-                                    //std::cout << "SALOPE !! EQUAL : " << equal << ", i : " << i << ", j : " << j << ", k : " << k << ", p : " << p << ", m : "<< m << ", n : " << n << std::endl;
-                                    if(firstCell == secondCell){
-                                        //std::cout << "FIRST CELL : " << firstCell << "SECOND CELL : " << secondCell << "THIRD CELL : " << thirdCell << std::endl;
-                                        if(thirdCell.size() == 2){
-                                            for(uint8_t z = 0; z < thirdCell.size(); ++z){
-                                                for(uint8_t x = 0; x < firstCell.size(); ++x){
-                                                    if(firstCell[x] == thirdCell[z])
-                                                        equal = true;
-                                                    else
-                                                        equal = false;
-                                                }
+                                if( (this->board[i][j].getPossibilities().size() == 3 )
+                                        && ( (this->board[k][p].getPossibilities().size() == 3 && this->board[m][n].getPossibilities().size() == 2)
+                                             || (this->board[k][p].getPossibilities().size() == 2 && this->board[m][n].getPossibilities().size() == 3) )){
+                                    if( ( i == k && j != p && j != n)
+                                            || ( i!= k && j == p  )){
+
+                                        std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                                        std::vector<int> secondCell = this->board[k][p].getPossibilities();
+                                        std::vector<int> thirdCell = this->board[m][n].getPossibilities();
+                                        bool equal = false;
+
+                                        if(firstCell == secondCell){
+                                            //std::cout << "FIRST CELL : " << firstCell << "SECOND CELL : " << secondCell << "THIRD CELL : " << thirdCell << std::endl;
+                                            if(thirdCell.size() == 2){
+                                                for(uint8_t z = 0; z < thirdCell.size(); ++z){
+                                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                                        if(firstCell[x] == thirdCell[z])
+                                                            equal = true;
+                                                        else
+                                                            equal = false;
+                                                    }
+                                                }//test here
                                             }
-                                        }
-                                        if(equal){
-                                            for(int v = l; v < (l + 3); ++v ){
-                                                for(int w = y; w < (y + 3); ++w){
-                                                    if( ( ( (v != i && w != j) && (v == i && w != j) && (v != i && w == j) )
-                                                          && ( (v != k && w != p) && (v == k && w != p) && (v != k && w == p) ) )
-                                                            && ( (m != i && n != j) && (m == i && n != j) && (m != i && n == j) )
-                                                            && ( (m != k && n != p) || (m == k && n != p) || (m != k && n == p)  )  ){
-                                                        std::vector<int> tmp = this->board[v][w].getPossibilities();
-                                                        for(uint8_t a = 0; a < firstCell.size(); ++a){
-                                                            for(uint8_t b = 0; b < tmp.size(); ++b){
-                                                                if(firstCell[a] == tmp[b]){
-                                                                    tmp.erase(tmp.begin() + b);
-                                                                    this->board[v][w].setPossiblities(tmp);
-
+                                            if(equal){
+                                                for(int v = l; v < (l + 3); ++v ){
+                                                    for(int w = y; w < (y + 3); ++w){
+                                                        if( ( ( (v != i && w != j) || (v == i && w != j) || (v != i && w == j) )
+                                                              && ( (v != k && w != p) || (v == k && w != p) || (v != k && w == p) ) )
+                                                              && ( (m != i && n != j) || (m == i && n != j) || (m != i && n == j) )
+                                                                  && ( (m != k && n != p) || (m == k && n != p) || (m != k && n == p)  )
+                                                                 && ( (v != m && w != n) || (v == m && w != n) || (v != m && w == n))){
+                                                            std::vector<int> tmp = this->board[v][w].getPossibilities();
+                                                            for(uint8_t a = 0; a < firstCell.size(); ++a){
+                                                                for(uint8_t b = 0; b < tmp.size(); ++b){
+                                                                    if(firstCell[a] == tmp[b]){
+                                                                        tmp.erase(tmp.begin() + b);
+                                                                        this->board[v][w].setPossiblities(tmp);
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
-
                                                 }
                                             }
-
-                                        }
-                                    }else if(firstCell == thirdCell){
-                                        if(secondCell.size() == 2){
-                                            for(uint8_t z = 0; z < secondCell.size(); ++z){
-                                                for(uint8_t x = 0; x < firstCell.size(); ++x){
-                                                    if(firstCell[x] == secondCell[z])
-                                                        equal = true;
-                                                    else
-                                                        equal = false;
+                                        }else if(firstCell == thirdCell){
+                                            if(secondCell.size() == 2){
+                                                for(uint8_t z = 0; z < secondCell.size(); ++z){
+                                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                                        if(firstCell[x] == secondCell[z])
+                                                            equal = true;
+                                                        else
+                                                            equal = false;
+                                                    }
                                                 }
                                             }
-                                        }
-                                        if(equal){
-                                            for(int v = l; v < (l + 3); ++v ){
-                                                for(int w = y; w < (y + 3); ++w){
-                                                    if( ( ( (v != i && w != j) || (v == i && w != j) || (v != i && w == j) )
-                                                          && ( (v != k && w != p) || (v == k && w != p) || (v != k && w == p) ) )
-                                                          && ( (m != i && n != j) || (m == i && n != j) || (m != i && n == j) )
-                                                              && ( (m != k && n != p) || (m == k && n != p) || (m != k && n == p)  )
-                                                             && ( (v != m && w != n) || (v == m && w != n) || (v != m && w == n))){
-                                                        std::vector<int> tmp = this->board[v][w].getPossibilities();
-                                                        std::cout << "FIRST CELL : " << firstCell << "SECOND CELL : " << secondCell << "THIRD CELL : " << thirdCell << std::endl;
-                                                        for(uint8_t a = 0; a < firstCell.size(); ++a){
-                                                            for(uint8_t b = 0; b < tmp.size(); ++b){
-                                                                if(firstCell[a] == tmp[b]){
-                                                                    tmp.erase(tmp.begin() + b);
-                                                                    this->board[v][w].setPossiblities(tmp);
+                                            if(equal){
+                                                for(int v = l; v < (l + 3); ++v ){
+                                                    for(int w = y; w < (y + 3); ++w){
+                                                        if( ( ( (v != i && w != j) || (v == i && w != j) || (v != i && w == j) )
+                                                              && ( (v != k && w != p) || (v == k && w != p) || (v != k && w == p) ) )
+                                                              && ( (m != i && n != j) || (m == i && n != j) || (m != i && n == j) )
+                                                                  && ( (m != k && n != p) || (m == k && n != p) || (m != k && n == p)  )
+                                                                 && ( (v != m && w != n) || (v == m && w != n) || (v != m && w == n))){
+                                                            std::vector<int> tmp = this->board[v][w].getPossibilities();
+                                                            //std::cout << "FIRST CELL : " << firstCell << "SECOND CELL : " << secondCell << "THIRD CELL : " << thirdCell << std::endl;
+                                                            for(uint8_t a = 0; a < firstCell.size(); ++a){
+                                                                for(uint8_t b = 0; b < tmp.size(); ++b){
+                                                                    if(firstCell[a] == tmp[b]){
+                                                                        tmp.erase(tmp.begin() + b);
+                                                                        this->board[v][w].setPossiblities(tmp);
 
+                                                                    }
                                                                 }
                                                             }
                                                         }
                                                     }
-
                                                 }
                                             }
-
                                         }
                                     }
-
                                 }
                             }
+
                         }
-
-
                     }
                 }
             }
@@ -985,14 +905,217 @@ void Board::nakedTriple()
     }
 }
 
+bool Board::lockedTriple()
+{
+    for(int i = 0; i < 9; ++i){
+        for(int j = 0; j < 9; ++j){
+            if(this->board[i][j].getNumber() == 0){
+                if(rowLockedTriple(i, j) || columnLockedTriple(i, j) || squareLockedTriple(i, j))
+                    return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool Board::rowLockedTriple(int i, int j)
+{
+    bool locked = false;
+    int value;
+    for(int k = 0; k < 9; ++k){
+        if(k != j){
+            for(int u = 0; u < 9; ++u){
+                if(k != j && k != u && u != j ){
+                    if(this->board[i][j].getPossibilities().size() == 3
+                            && this->board[i][k].getPossibilities().size() == 2
+                            && this->board[i][u].getPossibilities().size() == 2){
+                        std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                        std::vector<int> secondCell = this->board[i][k].getPossibilities();
+                        std::vector<int> thirdCell = this->board[i][u].getPossibilities();
+
+                        for(uint8_t z = 0; z < firstCell.size(); ++z){
+                            for(uint8_t v = 0; v < secondCell.size(); ++v){
+                                for(uint8_t x = 0; x < thirdCell.size(); ++x){
+                                    if(firstCell[z] == secondCell[v] && firstCell[z] == thirdCell[x]){
+                                        locked = true;
+                                        value = firstCell[z];
+                                    }else
+                                        locked = false;
+                                }
+                            }
+                        }
+                        if(locked){
+                            for(int p = 0; p < 9; ++p){
+                                if(p != j && p != u && p != k ){
+                                    std::vector<int> tmp = this->board[i][p].getPossibilities();
+                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                        for(uint8_t z = 0; z < tmp.size(); ++z){
+                                            if(tmp[z] == firstCell[x]){
+                                                tmp.erase(tmp.begin() + z);
+                                                this->board[i][p].setPossiblities(tmp);
+                                                std::cout << "i :" << i << ", j : "<< j
+                                                          << " ROW ! Value : " << value << std::endl;
+                                            }
+                                        }
+                                    }
+                                    if(inclusive()) return true;
+                                    else if(hiddenSingle()) return true;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Board::columnLockedTriple(int i, int j)
+{
+    bool locked = false;
+    int value;
+    for(int k = 0; k < 9; ++k){
+        if(k != i){
+            for(int u = 0; u < 9; ++u){
+                if(k != i && k != u && u != i ){
+                    if(this->board[i][j].getPossibilities().size() == 3
+                            && this->board[k][j].getPossibilities().size() == 2
+                            && this->board[u][j].getPossibilities().size() == 2){
+                        std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                        std::vector<int> secondCell = this->board[k][j].getPossibilities();
+                        std::vector<int> thirdCell = this->board[u][j].getPossibilities();
+
+                        for(uint8_t z = 0; z < firstCell.size(); ++z){
+                            for(uint8_t v = 0; v < secondCell.size(); ++v){
+                                for(uint8_t x = 0; x < thirdCell.size(); ++x){
+                                    if(firstCell[z] == secondCell[v] && firstCell[z] == thirdCell[x]){
+                                        locked = true;
+                                        value = firstCell[z];
+                                    }else
+                                        locked = false;
+                                }
+                            }
+                        }
+                        if(locked){
+                            for(int p = 0; p < 9; ++p){
+                                if(p != i && p != u && p != k ){
+                                    std::vector<int> tmp = this->board[p][j].getPossibilities();
+                                    for(uint8_t x = 0; x < firstCell.size(); ++x){
+                                        for(uint8_t z = 0; z < tmp.size(); ++z){
+                                            if(tmp[z] == firstCell[x]){
+                                                tmp.erase(tmp.begin() + z);
+                                                this->board[p][j].setPossiblities(tmp);
+                                                std::cout << "i :" << i << ", j : "<< j
+                                                          << ", p : " << p << "COLUMN ! Value : " << value << std::endl;
+                                            }
+                                        }
+                                    }
+                                    if(inclusive()) return true;
+                                    else if(hiddenSingle()) return true;
+                                }
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
+bool Board::squareLockedTriple(int i, int j)
+{
+    int l, c;
+    squareIndex(i, j, &l, &c);
+    bool locked = false;
+    int value;
+
+    for(int k = l; k < (l + 3); ++k){
+        for(int p = c; p < (c + 3); ++p){
+            if( (i != k && p != j) || (i == k && j != p) || (i != k && j == p) ){
+                for(int m = l; m < (l + 3); ++m){
+                    for(int n = p; n < (p + 3); ++n){
+                        if( ( (m != k && p != n) || (m == k && n != p) || (m != k && n == p) )
+                                && ( (i != m && n != j) || (i == m && j != n) || (i != m && j == n)) ){
+                            if(this->board[i][j].getPossibilities().size() == 3
+                                    && this->board[k][p].getPossibilities().size() == 2
+                                    && this->board[m][n].getPossibilities().size() == 2){
+                                for(int v = l; v < (l + 3); ++v){
+                                    for(int w = c; w < (c + 3); ++w){
+                                        if( ( ( (v != i && w != j) || (v == i && w != j) || (v != i && w == j) )
+                                             && ( (v != k && w != p) || (v == k && w != p) || (v != k && w == p) ) )
+                                             && ( (m != i && n != j) || (m == i && n != j) || (m != i && n == j) )
+                                                 && ( (m != k && n != p) || (m == k && n != p) || (m != k && n == p)  )
+                                                && ( (v != m && w != n) || (v == m && w != n) || (v != m && w == n))){
+                                            std::vector<int> firstCell = this->board[i][j].getPossibilities();
+                                            std::vector<int> secondCell = this->board[k][p].getPossibilities();
+                                            std::vector<int> thirdCell = this->board[m][n].getPossibilities();
+
+                                            for(uint8_t z = 0; z < firstCell.size(); ++z){
+                                                for(uint8_t t = 0; t < secondCell.size(); ++t){
+                                                    for(uint8_t x = 0; x < thirdCell.size(); ++x){
+                                                        if(firstCell[z] == secondCell[t] && firstCell[z] == thirdCell[x]){
+                                                            locked = true;
+                                                            value = firstCell[z];
+                                                        }else
+                                                            locked = false;
+                                                    }
+                                                }
+                                            }
+                                            if(locked){
+                                                for(int a = l; a < (l + 3); ++a){
+                                                    for(int b = c; b < (c + 3); ++b){
+                                                        if( ( ( (a != i && b != j) || (a == i && b != j) || (a != i && b == j) )
+                                                             && ( (a != k && b != p) || (a == k && b != p) || (a != k && b == p) ) )
+                                                             && ( (m != i && n != j) || (m == i && n != j) || (m != i && n == j) )
+                                                                 && ( (m != k && n != p) || (m == k && n != p) || (m != k && n == p)  )
+                                                                && ( (a != m && b != n) || (a == m && b != n) || (a != m && b == n))){
+
+                                                            std::vector<int> tmp = this->board[a][b].getPossibilities();
+                                                            for(uint8_t e = 0; e < firstCell.size(); ++e){
+                                                                for(uint8_t d = 0; d < tmp.size(); ++d){
+                                                                    if(tmp[d] == firstCell[e]){
+                                                                        tmp.erase(tmp.begin() + d);
+                                                                        this->board[a][b].setPossiblities(tmp);
+                                                                    }
+                                                                }
+                                                            }
+                                                            /*for(uint8_t d = 0; d < tmp.size(); ++d){
+                                                                if(tmp[d] == value){
+                                                                    tmp.erase(tmp.begin() + d);
+                                                                    this->board[a][b].setPossiblities(tmp);
+                                                                }
+                                                            }*/
+                                                            if(inclusive()) return true;
+                                                            else if(hiddenSingle()) return true;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    return false;
+}
+
 bool Board::pointingPair()
 {
     for(int i = 0; i < 9; ++i){
         for(int j = 0; j < 9; ++j){
             if(this->board[i][j].getNumber() == 0){
                 int value = 0;
-                if(rowPointingPair(i, j, &value) || columnPointingPair(i, j, &value)) return true;
-
+                if(rowPointingPair(i, j, &value) || columnPointingPair(i, j, &value))
+                    return true;
             }
         }
     }
