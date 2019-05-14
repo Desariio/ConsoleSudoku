@@ -78,8 +78,7 @@ void Board::step()
 
         nakedPair();
         nakedTriple();
-        if(lockedTriple())
-            break;
+
         //hiddenPair();
         if(pointingPair() )
             break;
@@ -87,7 +86,8 @@ void Board::step()
         if(inclusive() || hiddenSingle())
            break;
 
-
+        if(lockedTriple())
+            break;
 
         if(isSolved())
             insert = true;
@@ -492,7 +492,7 @@ void Board::squareNakedPair(int i, int j)
             if( (i != k && p != j) || (i == k && p != j) || (i != k && p == j)){
                 if(this->board[i][j].getPossibilities() == this->board[k][p].getPossibilities() && this->board[i][j].getPossibilities().size() == 2){
                 //    std::cout << "TAAAADDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" << std::endl;
-                    std::cout << "i : "<< i << ", j :" << j << "k : "<< k << ", p :" << p << std::endl;
+                    std::cout << "SQUARE NAKED PAIR ! i : "<< i << ", j :" << j << "k : "<< k << ", p :" << p << std::endl;
 
                     for(int v = l; v < (l+3); ++v){
                         for(int w = y; w < (y+3); ++w){
@@ -953,7 +953,7 @@ bool Board::rowLockedTriple(int i, int j)
                                             if(tmp[z] == firstCell[x]){
                                                 tmp.erase(tmp.begin() + z);
                                                 this->board[i][p].setPossiblities(tmp);
-                                                std::cout << "i :" << i << ", j : "<< j
+                                                std::cout << "i :" << i << ", j : "<< j << ", u :" << u << ", k :" << k << ", p :" << p
                                                           << " ROW ! Value : " << value << std::endl;
                                             }
                                         }
@@ -1179,24 +1179,23 @@ bool Board::rowPointingPair(int i, int j, int *value)
                             if(!remove){
                                 for(int m = l; m < (l + 3); ++m){
                                     for(int n = c; n < (c + 3); ++n){
-                                        if( ( (m != i && n != j) || ( m == i && n != j) || (m != i && n == j)  || ( m != w && n != j) || ( m == w && n != j) || (m != w && n ==j) )){
+                                        if( ( (m != i && n != j) || ( m == i && n != j) || (m != i && n == j)  || ( m != i && n != w) || ( m == i && n != w) || (m != i && n == w) )){
 
-                                               if(inclusive())
-                                                  return true;
-                                               else if(hiddenSingle())
-                                                  return true;
-
-
+                                            if(inclusive())
+                                                return true;
+                                            else if(hiddenSingle())
+                                                return true;
                                             std::vector<int> tmp = this->board[m][n].getPossibilities();
 
                                             for(uint8_t z = 0; z < tmp.size(); ++z){
                                                 if(tmp[z] == *value){
-                                                    std::cout << "m : " << m << ", n : " << n << ", value : " << *value << ", tmp : " << tmp << std::endl;
+                                                    std::cout << "ROW ici?! i : "<< i << ", j : " << j << ", m : " << m << ", n : " << n << ", value : " << *value << ", tmp : " << tmp << std::endl;
                                                     tmp.erase(tmp.begin() + z);
                                                     this->board[m][n].setPossiblities(tmp);
                                                     //std::cout << "VALUE " << *value << ";  m : "<< m << ", n : " << n << std::endl;
                                                 }
                                             }
+
                                         }
                                     }
                                 }
