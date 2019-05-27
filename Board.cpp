@@ -1167,7 +1167,7 @@ bool Board::rowPointingPair(int i, int j, int *value)
                                std::vector<int> tmp = this->board[i][w].getPossibilities();
                                for(uint8_t y = 0; y < tmp.size(); ++y){
                                    if(tmp[y] == *value){
-                                       std::cout<< "REMOVE ROW: " << *value << "i : " << i << ", w : " << w << std::endl;
+                                       //std::cout<< "REMOVE ROW: " << *value << "i : " << i << ", w : " << w << std::endl;
                                        tmp.erase(tmp.begin() + y);
                                        this->board[i][w].setPossiblities(tmp);
                                        remove = true;
@@ -1189,7 +1189,7 @@ bool Board::rowPointingPair(int i, int j, int *value)
 
                                             for(uint8_t z = 0; z < tmp.size(); ++z){
                                                 if(tmp[z] == *value){
-                                                    std::cout << "ROW ici?! i : "<< i << ", j : " << j << ", m : " << m << ", n : " << n << ", value : " << *value << ", tmp : " << tmp << std::endl;
+                                                    //std::cout << "ROW ici?! i : "<< i << ", j : " << j << ", m : " << m << ", n : " << n << ", value : " << *value << ", tmp : " << tmp << std::endl;
                                                     tmp.erase(tmp.begin() + z);
                                                     this->board[m][n].setPossiblities(tmp);
                                                 }
