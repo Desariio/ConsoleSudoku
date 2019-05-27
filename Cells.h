@@ -13,6 +13,7 @@ public:
     ~Cells();
 
     int getNumber() const;
+    void setNumber(int number);
     std::vector<int> getPossibilities();
     void setPossiblities(std::vector<int> possi);
 

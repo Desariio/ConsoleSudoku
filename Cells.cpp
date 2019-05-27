@@ -17,6 +17,10 @@ int Cells::getNumber() const
 {
     return this->number;
 }
+void Cells::setNumber(int number)
+{
+    this->number = number;
+}
 std::vector<int> Cells::getPossibilities()
 {
     return this->possibilities;

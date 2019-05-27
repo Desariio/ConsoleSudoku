@@ -18,12 +18,14 @@ public:
     bool isSolved();
 
     void step();
+    Cells getCells(int i, int j);
+    void setCells(int i, int j, int number);
 
     friend std::ostream & operator<<(std::ostream & flux, Board const &board);
     friend bool operator==(Board const& tmp, Board const& board);
     friend bool operator!=(Board const& tmp, Board const& board);
 
-
+protected:
 private:
     Cells board[9][9];
 
@@ -43,7 +45,7 @@ private:
 
     bool rowSingle(int i, int j, int *value);
     bool columnSingle(int i, int j, int *value);
-    bool blockSingle(int i, int j, int *value);
+    bool squareSingle(int i, int j, int *value);
 
     void rowHiddenPair(int i, int j, int *value);
 
